@@ -1,21 +1,17 @@
 package main
 
 import (
-	"fmt"
+	"goblog/app/http/middlewares"
+	"goblog/bootstrap"
 	"net/http"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
-func handlerFunc(w http.ResponseWriter, r * http.Request) {
-	if r.URL.Path == "/" {
-		fmt.Fprint(w, "<h1>Hello, 这里是 goblog</h1>")
-	} else if r.URL.Path == "/about" {
-		fmt.Fprint(w, "<h1>关于我</h1>")
-	} else {
-		fmt.Fprint(w, "<h1>未找到页面</h1>")
-	}
-}
+func main() {
 
-func main(){
-	http.HandleFunc("/", handlerFunc)
-	http.ListenAndServe(":3000", nil)
+	bootstrap.SetUpDB()
+	router := bootstrap.SetupRoute()
+
+	http.ListenAndServe(":3000", middlewares.RemoveTrailingSlash(router))
 }
