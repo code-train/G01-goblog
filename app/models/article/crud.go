@@ -21,6 +21,7 @@ func Get(idstr string) (Article, error) {
 // GetAll method
 func GetAll() ([]Article, error) {
 	var articles []Article
+
 	if err := model.DB.Find(&articles).Error; err != nil {
 		return articles, err
 	}

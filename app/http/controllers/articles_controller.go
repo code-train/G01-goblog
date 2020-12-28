@@ -5,10 +5,8 @@ import (
 	"goblog/app/models/article"
 	"goblog/pkg/logger"
 	"goblog/pkg/route"
-	"goblog/pkg/types"
-	"html/template"
+	"goblog/pkg/view"
 	"net/http"
-	"strconv"
 	"unicode/utf8"
 
 	"gorm.io/gorm"
@@ -33,14 +31,7 @@ func (c *ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, "500 服务器内部错误")
 		}
 	} else {
-
-		tmpl, err := template.New("show.gohtml").
-			Funcs(template.FuncMap{
-				"RouteName2URL": route.Name2URL,
-				"Int64ToString": types.Int64ToString,
-			}).ParseFiles("resources/views/articles/show.gohtml")
-		logger.LogError(err)
-		tmpl.Execute(w, article)
+		view.Render(w, article, "articles.show")
 	}
 }
 
@@ -54,37 +45,16 @@ func (c *ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "500 Internal Server Error")
 	} else {
-		tmpl, err := template.ParseFiles("resources/views/articles/index.gohtml")
-		logger.LogError(err)
-		tmpl.Execute(w, articles)
+		fmt.Println(articles)
+		view.Render(w, articles, "articles.index")
 	}
-}
-
-// ArticlesFormData struct
-type ArticlesFormData struct {
-	Title, Body string
-	URL         string
-	Errors      map[string]string
 }
 
 // Create 创建页面
 func (c *ArticlesController) Create(w http.ResponseWriter, r *http.Request) {
-	storeURL := route.Name2URL("articles.store")
 
-	data := ArticlesFormData{
-		Title:  "",
-		Body:   "",
-		URL:    storeURL,
-		Errors: nil,
-	}
+	view.Render(w, view.D{}, "articles.create", "articles._form_field")
 
-	tmpl, err := template.ParseFiles("resources/views/articles/create.gohtml")
-
-	if err != nil {
-		panic(err)
-	}
-
-	tmpl.Execute(w, data)
 }
 
 func validateArticleFormData(title string, body string) map[string]string {
@@ -110,30 +80,25 @@ func (c *ArticlesController) Store(w http.ResponseWriter, r *http.Request) {
 	body := r.PostFormValue("body")
 
 	errors := validateArticleFormData(title, body)
-	fmt.Println(errors)
+
+	_article := article.Article{Title: title, Body: body}
+
 	if len(errors) == 0 {
-		_article := article.Article{Title: title, Body: body}
+
 		_article.Create()
 		if _article.ID > 0 {
-			fmt.Fprint(w, "插入成功, ID为"+strconv.FormatInt(_article.ID, 10))
+			fmt.Fprint(w, "插入成功, ID为"+_article.GetStringID())
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "500 Internal Server Error")
 		}
 	} else {
-		storeURL := route.Name2URL("articles.store")
-
-		data := ArticlesFormData{
-			Title:  title,
-			Body:   body,
-			URL:    storeURL,
-			Errors: errors,
+		data := view.D{
+			"Article": _article,
+			"Errors":  errors,
 		}
 
-		tmpl, err := template.ParseFiles("resources/views/articles/create.gohtml")
-		logger.LogError(err)
-		tmpl.Execute(w, data)
-
+		view.Render(w, data, "articles.create", "articles._form_field")
 	}
 
 }
@@ -143,7 +108,7 @@ func (c *ArticlesController) Edit(w http.ResponseWriter, r *http.Request) {
 
 	id := route.GetRouterVar("id", r)
 
-	article, err := article.Get(id)
+	_article, err := article.Get(id)
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -155,19 +120,13 @@ func (c *ArticlesController) Edit(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, "500 Internal Server Error")
 		}
 	} else {
-		updateURL := route.Name2URL("articles.update", "id", id)
 
-		data := ArticlesFormData{
-			Title:  article.Title,
-			Body:   article.Body,
-			URL:    updateURL,
-			Errors: nil,
-		}
-
-		tmpl, err := template.ParseFiles("resources/views/articles/edit.gohtml")
-		logger.LogError(err)
-		tmpl.Execute(w, data)
-
+		view.Render(w, view.D{
+			"Title":   _article.Title,
+			"Body":    _article.Body,
+			"Article": _article,
+			"Errors":  view.D{},
+		}, "articles.edit", "articles._form_field")
 	}
 
 }
@@ -214,21 +173,13 @@ func (c *ArticlesController) Update(w http.ResponseWriter, r *http.Request) {
 			}
 
 		} else {
-			updateURL := route.Name2URL("articles.update", "id", id)
-
-			data := ArticlesFormData{
-				Title:  title,
-				Body:   body,
-				URL:    updateURL,
-				Errors: errors,
+			data := view.D{
+				"Title":   title,
+				"Body":    body,
+				"Article": _article,
+				"Errors":  errors,
 			}
-
-			tmpl, err := template.ParseFiles("resources/views/articles/edit.gohtml")
-
-			logger.LogError(err)
-
-			tmpl.Execute(w, data)
-
+			view.Render(w, data, "articles.edit", "articles._form_field")
 		}
 
 	}

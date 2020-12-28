@@ -18,3 +18,8 @@ func StringToInt(str string) int {
 	}
 	return i
 }
+
+// Uint64ToString method
+func Uint64ToString(num uint64) string {
+	return strconv.FormatUint(num, 10)
+}
