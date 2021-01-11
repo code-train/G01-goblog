@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"goblog/pkg/logger"
 	"goblog/pkg/model"
+	"goblog/pkg/pagination"
+	"goblog/pkg/route"
 	"goblog/pkg/types"
+	"net/http"
 )
 
 // Get 通过 ID 获取文字
@@ -19,13 +22,16 @@ func Get(idstr string) (Article, error) {
 }
 
 // GetAll method
-func GetAll() ([]Article, error) {
-	var articles []Article
+func GetAll(r *http.Request, perPage int) ([]Article, pagination.ViewData, error) {
 
-	if err := model.DB.Preload("User").Find(&articles).Error; err != nil {
-		return articles, err
-	}
-	return articles, nil
+	db := model.DB.Model(Article{}).Order("created_at desc")
+	_pager := pagination.New(r, db, route.Name2URL("articles.index"), perPage)
+
+	viewData := _pager.Paging()
+
+	var articles []Article
+	_pager.Results(&articles)
+	return articles, viewData, nil
 }
 
 // Create method

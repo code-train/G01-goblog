@@ -33,7 +33,7 @@ func (c *ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 
 // Index 文章列表
 func (c *ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
-	articles, err := article.GetAll()
+	var articles, pagerData, err = article.GetAll(r, 2)
 
 	if err != nil {
 		c.ResponseForSQLError(w, err)
@@ -41,6 +41,7 @@ func (c *ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
 
 		view.Render(w, view.D{
 			"Articles": articles,
+			"PagerData": pagerData,
 		}, "articles.index", "articles._article_meta")
 	}
 }
