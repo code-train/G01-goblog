@@ -2,9 +2,11 @@ package controllers
 
 import (
 	"fmt"
+	"goblog/app/models/article"
 	"goblog/app/models/category"
 	"goblog/app/requests"
 	"goblog/pkg/flash"
+	"goblog/pkg/route"
 	"goblog/pkg/view"
 	"net/http"
 )
@@ -40,6 +42,22 @@ func (c CategoriesController) Store(w http.ResponseWriter, r *http.Request) {
 			"Errors": errors,
 		}, "categories.create")
 	}
-
-
 }
+
+func (c CategoriesController) Show(w http.ResponseWriter, r *http.Request)  {
+	id := route.GetRouterVar("id", r)
+	_category, err := category.Get(id)
+
+	articles, pagerData, err := article.GetByCategoryID(_category.GetStringID(), r, 2)
+
+	if err != nil {
+		c.ResponseForSQLError(w, err)
+	}else {
+		view.Render(w, view.D{
+			"Articles": articles,
+			"PagerData": pagerData,
+		}, "articles.index", "articles._article_meta")
+	}
+}
+
+

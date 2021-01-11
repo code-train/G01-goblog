@@ -46,7 +46,7 @@ func init() {
 	govalidator.AddCustomRule("min_cn", func(field string, rule string, message string, value interface{}) error {
 		valLength := utf8.RuneCountInString(value.(string))
 		l, _ := strconv.Atoi(strings.TrimPrefix(rule, "min_cn:"))
-		if valLength > l {
+		if valLength < l {
 			if message != "" {
 				return errors.New(message)
 			}
