@@ -5,16 +5,15 @@ import (
 	"goblog/app/models/article"
 	"goblog/app/policies"
 	"goblog/app/requests"
-	"goblog/pkg/flash"
-	"goblog/pkg/logger"
+	"goblog/pkg/auth"
 	"goblog/pkg/route"
 	"goblog/pkg/view"
-	"gorm.io/gorm"
 	"net/http"
 )
 
 // ArticlesController struct
 type ArticlesController struct {
+	BaseController
 }
 
 // Show method
@@ -23,14 +22,7 @@ func (c *ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 	article, err := article.Get(id)
 
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprint(w, "404 文章未找到")
-		} else {
-			logger.LogError(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "500 服务器内部错误")
-		}
+		c.ResponseForSQLError(w, err)
 	} else {
 		view.Render(w, view.D{
 			"Article": article,
@@ -41,13 +33,10 @@ func (c *ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 
 // Index 文章列表
 func (c *ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
-
 	articles, err := article.GetAll()
 
 	if err != nil {
-		logger.LogError(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, "500 Internal Server Error")
+		c.ResponseForSQLError(w, err)
 	} else {
 
 		view.Render(w, view.D{
@@ -58,16 +47,17 @@ func (c *ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
 
 // Create 创建页面
 func (c *ArticlesController) Create(w http.ResponseWriter, r *http.Request) {
-
 	view.Render(w, view.D{}, "articles.create", "articles._form_field")
 
 }
 
 // Store 创建文章
 func (c *ArticlesController) Store(w http.ResponseWriter, r *http.Request) {
+	currentUser := auth.User()
 	_article := article.Article{
 		Title: r.PostFormValue("title"),
 		Body:  r.PostFormValue("body"),
+		UserID: currentUser.ID,
 	}
 
 	errors := requests.ValidateArticleForm(_article)
@@ -76,7 +66,6 @@ func (c *ArticlesController) Store(w http.ResponseWriter, r *http.Request) {
 
 		_article.Create()
 		if _article.ID > 0 {
-			fmt.Fprint(w, "插入成功, ID为"+_article.GetStringID())
 			indexURL := route.Name2URL("articles.show", "id", _article.GetStringID())
 			http.Redirect(w, r, indexURL, http.StatusFound)
 		} else {
@@ -102,18 +91,10 @@ func (c *ArticlesController) Edit(w http.ResponseWriter, r *http.Request) {
 	_article, err := article.Get(id)
 
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprint(w, "404 NOT FOUND")
-		} else {
-			logger.LogError(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "500 Internal Server Error")
-		}
+		c.ResponseForSQLError(w, err)
 	} else {
 		if !policies.CanModifyArticle(_article) {
-			flash.Warning("未授权操作！")
-			http.Redirect(w, r, "/", http.StatusForbidden)
+			c.ResponseForUnauthorized(w, r)
 		} else {
 			view.Render(w, view.D{
 				"Article": _article,
@@ -132,18 +113,10 @@ func (c *ArticlesController) Update(w http.ResponseWriter, r *http.Request) {
 	_article, err := article.Get(id)
 
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprint(w, "404 Not Found")
-		} else {
-			logger.LogError(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "500 Internal Server Error")
-		}
+		c.ResponseForSQLError(w, err)
 	} else {
 		if !policies.CanModifyArticle(_article) {
-			flash.Warning("未授权操作！")
-			http.Redirect(w, r, "/", http.StatusForbidden)
+			c.ResponseForUnauthorized(w, r)
 		} else {
 
 			_article.Title = r.PostFormValue("title")
@@ -188,18 +161,10 @@ func (c *ArticlesController) Delete(w http.ResponseWriter, r *http.Request) {
 	_article, err := article.Get(id)
 
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprint(w, "404 NOT FOUND")
-		} else {
-			logger.LogError(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "500 Internal Server Error")
-		}
+		c.ResponseForSQLError(w, err)
 	} else {
 		if !policies.CanModifyArticle(_article) {
-			flash.Warning("您没有权限执行此操作！")
-			http.Redirect(w, r, "/", http.StatusForbidden)
+			c.ResponseForUnauthorized(w, r)
 		} else {
 
 			rowsAffected, err := _article.Delete()
