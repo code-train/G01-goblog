@@ -1,7 +1,6 @@
 package view
 
 import (
-	"fmt"
 	"goblog/pkg/auth"
 	"goblog/pkg/flash"
 	"goblog/pkg/logger"
@@ -34,9 +33,6 @@ func RenderTemplate(w io.Writer, name string, data D, tplFiles ...string) {
 	data["flash"] = flash.All()
 
 	allFiles := getTemplateFiles(tplFiles...)
-
-	fmt.Println("========= allFiles =======")
-	fmt.Println(allFiles)
 
 	tmpl, err := template.New("").
 		Funcs(template.FuncMap{
