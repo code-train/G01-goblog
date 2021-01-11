@@ -1,28 +1,28 @@
 {{define "simple"}}
-<!DOCTYPE html>
-<html lang="en">
+    <!DOCTYPE html>
+    <html lang="en">
 
-<head>
-  <title>{{template "title" .}}</title>
-  <link href="/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/css/app.css" rel="stylesheet">
-</head>
+    <head>
+        <title>{{template "title" .}}</title>
+        <link href="/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/css/app.css" rel="stylesheet">
+    </head>
 
-<body>
+    <body>
 
-  <div class="container-sm">
-    <div class="row  mt-5">
+    <div class="container-sm">
+        <div class="row  mt-5">
 
-      <div class="col-md-8 offset-md-2 blog-main">
-        {{template "main" .}}
-      </div>
+            <div class="col-md-8 offset-md-2 blog-main">
+                {{template "main" .}}
+            </div>
 
+        </div>
     </div>
-  </div>
 
-  <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
 
-</body>
+    </body>
 
-</html>
+    </html>
 {{end}}
