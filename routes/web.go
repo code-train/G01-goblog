@@ -43,6 +43,9 @@ func RegisterWebRoutes(r *mux.Router) {
 
 	r.HandleFunc("/auth/logout", middlewares.Auth(auc.Logout)).Methods("POST").Name("auth.logout")
 
+	uc := new(controllers.UserController)
+	r.HandleFunc("/users/{id:[0-9]+}", uc.Show).Methods("GET").Name("users.show")
+
 	r.Use(middlewares.StartSession)
 
 }
