@@ -18,6 +18,7 @@ type ArticlesController struct {
 
 // Show method
 func (c *ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
+
 	id := route.GetRouterVar("id", r)
 	article, err := article.Get(id)
 
