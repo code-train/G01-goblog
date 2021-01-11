@@ -2,6 +2,7 @@ package routes
 
 import (
 	"goblog/app/http/controllers"
+	"goblog/app/http/middlewares"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -11,12 +12,13 @@ import (
 func RegisterWebRoutes(r *mux.Router) {
 
 	pc := new(controllers.PageController)
-
-	r.HandleFunc("/", pc.Home).Methods("GET").Name("home")
-	r.HandleFunc("/about", pc.About).Methods("GET").Name("about")
 	r.NotFoundHandler = http.HandlerFunc(pc.NotFound)
 
+	r.HandleFunc("/about", pc.About).Methods("GET").Name("about")
+
+
 	ac := new(controllers.ArticlesController)
+	r.HandleFunc("/", ac.Index).Methods("GET").Name("home")
 	r.HandleFunc("/articles/{id:[0-9]+}", ac.Show).Methods("GET").Name("articles.show")
 
 	r.HandleFunc("/articles", ac.Index).Methods("GET").Name("articles.index")
@@ -35,5 +37,12 @@ func RegisterWebRoutes(r *mux.Router) {
 	auc := new(controllers.AuthController)
 	r.HandleFunc("/auth/register", auc.Register).Methods("GET").Name("auth.register")
 	r.HandleFunc("/auth/do-register", auc.DoRegister).Methods("POST").Name("auth.doregister")
+
+	r.HandleFunc("/auth/login", auc.Login).Methods("GET").Name("auth.login")
+	r.HandleFunc("/auth/dologin", auc.DoLogin).Methods("POST").Name("auth.dologin")
+
+	r.HandleFunc("/auth/logout", auc.Logout).Methods("POST").Name("auth.logout")
+
+	r.Use(middlewares.StartSession)
 
 }

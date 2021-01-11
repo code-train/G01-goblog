@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"goblog/app/models/user"
 	"goblog/app/requests"
+	"goblog/pkg/auth"
+	"goblog/pkg/flash"
 	"goblog/pkg/view"
 	"net/http"
 )
@@ -39,6 +41,8 @@ func (c *AuthController) DoRegister(w http.ResponseWriter, r *http.Request) {
 		_user.Create()
 
 		if _user.ID > 0 {
+			flash.Success("恭喜你注册成功！")
+			auth.Login(_user)
 			http.Redirect(w, r, "/", http.StatusFound)
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -47,3 +51,32 @@ func (c *AuthController) DoRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+func (*AuthController) Login(w http.ResponseWriter, r *http.Request) {
+	view.RenderSimple(w, view.D{}, "auth.login")
+}
+
+func (*AuthController) DoLogin(w http.ResponseWriter, r *http.Request) {
+	email := r.PostFormValue("email")
+	password := r.PostFormValue("password")
+
+	if err := auth.Attempt(email, password); err == nil {
+		flash.Success("欢迎回来！")
+		http.Redirect(w, r, "/", http.StatusFound)
+	} else {
+		view.RenderSimple(w, view.D{
+			"Error": err.Error(),
+			"Email": email,
+			"Password": password,
+		}, "auth.login")
+	}
+
+}
+
+func (c AuthController) Logout(w http.ResponseWriter, r *http.Request)  {
+
+	auth.Logout()
+	flash.Success("您已成功退出登录")
+	http.Redirect(w, r, "/", http.StatusFound)
+}
+

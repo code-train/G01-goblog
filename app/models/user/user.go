@@ -1,6 +1,9 @@
 package user
 
-import "goblog/app/models"
+import (
+	"goblog/app/models"
+	"goblog/pkg/password"
+)
 
 // User 模型
 type User struct {
@@ -10,4 +13,9 @@ type User struct {
 	Password string `gorm:"column:password;type:varchar(255)" valid:"password"`
 
 	PasswordConfirm string `gorm:"-" valid:"password_confirm"`
+}
+
+
+func (user User) ComparePassword(_password string) bool {
+	return password.CheckHash(_password, user.Password)
 }

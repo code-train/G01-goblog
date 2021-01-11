@@ -2,6 +2,8 @@ package view
 
 import (
 	"fmt"
+	"goblog/pkg/auth"
+	"goblog/pkg/flash"
 	"goblog/pkg/logger"
 	"goblog/pkg/route"
 	"html/template"
@@ -14,30 +16,27 @@ import (
 type D map[string]interface{}
 
 // Render method
-func Render(w io.Writer, data interface{}, tplFiles ...string) {
+func Render(w io.Writer, data D, tplFiles ...string) {
+
 	RenderTemplate(w, "app", data, tplFiles...)
 }
 
 // RenderSimple 渲染简单的视图
-func RenderSimple(w io.Writer, data interface{}, tplFiles ...string) {
+func RenderSimple(w io.Writer, data D, tplFiles ...string) {
 	RenderTemplate(w, "simple", data, tplFiles...)
 }
 
 // RenderTemplate 渲染视图
-func RenderTemplate(w io.Writer, name string, data interface{}, tplFiles ...string) {
-	viewDir := "resources/views/"
+func RenderTemplate(w io.Writer, name string, data D, tplFiles ...string) {
 
-	for i, f := range tplFiles {
-		tplFiles[i] = viewDir + strings.Replace(f, ".", "/", -1) + ".gohtml"
-	}
+	data["isLogined"] = auth.Check()
+	data["loginUser"] = auth.User
+	data["flash"] = flash.All()
 
-	layoutFiles, err := filepath.Glob(viewDir + "layouts/*.gohtml")
+	allFiles := getTemplateFiles(tplFiles...)
 
-	logger.LogError(err)
-
-	allFiles := append(layoutFiles, tplFiles...)
-
-	fmt.Println(data)
+	fmt.Println("========= allFiles =======")
+	fmt.Println(allFiles)
 
 	tmpl, err := template.New("").
 		Funcs(template.FuncMap{
@@ -47,4 +46,17 @@ func RenderTemplate(w io.Writer, name string, data interface{}, tplFiles ...stri
 	logger.LogError(err)
 
 	tmpl.ExecuteTemplate(w, name, data)
+}
+
+func getTemplateFiles(tplFiles ...string) []string  {
+	viewDir := "resources/views/"
+
+	for i, f := range tplFiles {
+		tplFiles[i] = viewDir + strings.Replace(f, ".", "/", -1) + ".gohtml"
+	}
+	layoutFiles, err := filepath.Glob(viewDir + "layouts/*.gohtml")
+	logger.LogError(err)
+
+	return append(layoutFiles, tplFiles...)
+
 }

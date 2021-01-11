@@ -31,7 +31,9 @@ func (c *ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, "500 服务器内部错误")
 		}
 	} else {
-		view.Render(w, article, "articles.show")
+		view.Render(w, view.D{
+			"Article": article,
+		}, "articles.show")
 	}
 }
 
@@ -45,8 +47,10 @@ func (c *ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "500 Internal Server Error")
 	} else {
-		fmt.Println(articles)
-		view.Render(w, articles, "articles.index")
+
+		view.Render(w, view.D{
+			"Articles": articles,
+		}, "articles.index")
 	}
 }
 

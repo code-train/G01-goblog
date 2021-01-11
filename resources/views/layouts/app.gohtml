@@ -12,10 +12,10 @@
 
   <div class="container-sm">
     <div class="row mt-5">
+        {{template "messages" .}}
+        {{template "sidebar" .}}
 
-      {{template "sidebar" .}}
-
-      {{template "main" .}}
+        {{template "main" .}}
 
     </div>
   </div>
