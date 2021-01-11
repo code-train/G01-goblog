@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"goblog/app/models/article"
 	"goblog/app/models/user"
+	"goblog/pkg/config"
 	"goblog/pkg/model"
 	"time"
 
@@ -16,15 +17,15 @@ func SetUpDB() {
 
 	sqlDB, _ := db.DB()
 
-	sqlDB.SetMaxOpenConns(100)
-	sqlDB.SetMaxIdleConns(25)
+	sqlDB.SetMaxOpenConns(config.GetInt("database.mysql.max_open_connections"))
+	sqlDB.SetMaxIdleConns(config.GetInt("database.mysql.max_idle_connections"))
 
-	sqlDB.SetConnMaxLifetime(5 * time.Minute)
+	sqlDB.SetConnMaxLifetime(time.Duration(config.GetInt("database.mysql.max_life_seconds")) * time.Second)
 
-	migraton(db)
+	migration(db)
 }
 
-func migraton(db *gorm.DB) {
+func migration(db *gorm.DB) {
 	db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(
 		&user.User{},
 		&article.Article{},
