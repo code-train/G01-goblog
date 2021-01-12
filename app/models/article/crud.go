@@ -15,7 +15,7 @@ func Get(idstr string) (Article, error) {
 	var article Article
 	id := types.StringToInt(idstr)
 
-	if err := model.DB.Preload("User").First(&article, id).Error; err != nil {
+	if err := model.DB.Preload("User").Preload("Category").First(&article, id).Error; err != nil {
 		return article, err
 	}
 	return article, nil
@@ -36,8 +36,12 @@ func GetAll(r *http.Request, perPage int) ([]Article, pagination.ViewData, error
 
 // Create method
 func (article *Article) Create() (err error) {
+	fmt.Println("============ ARTICLE ============")
+	fmt.Println(article)
+	fmt.Println("============ ARTICLE ============")
+
 	result := model.DB.Create(&article)
-	fmt.Println(result)
+
 	if err = result.Error; err != nil {
 		logger.LogError(err)
 		return err

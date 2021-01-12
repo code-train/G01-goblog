@@ -3,16 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="9bddb3d2-f78e-44ef-a75c-0331d5d5d600" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/http/controllers/categories_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/app/http/controllers/categories_controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/http/controllers/articles_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/app/http/controllers/articles_controller.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/models/article/article.go" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/article/article.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/models/article/crud.go" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/article/crud.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/category/category.go" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/category/category.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/category/crud.go" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/category/crud.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/requests/category_form.go" beforeDir="false" afterPath="$PROJECT_DIR$/app/requests/category_form.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/requests/request.go" beforeDir="false" afterPath="$PROJECT_DIR$/app/requests/request.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/view/view.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/view/view.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/layouts/sidebar.gohtml" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/layouts/sidebar.gohtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/web.go" beforeDir="false" afterPath="$PROJECT_DIR$/routes/web.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/requests/article_form.go" beforeDir="false" afterPath="$PROJECT_DIR$/app/requests/article_form.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/articles/_article_meta.gohtml" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/articles/_article_meta.gohtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/articles/_form_field.gohtml" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/articles/_form_field.gohtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

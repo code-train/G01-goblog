@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/spf13/cast"
 	"goblog/app/models/article"
 	"goblog/app/policies"
 	"goblog/app/requests"
@@ -60,6 +61,7 @@ func (c *ArticlesController) Store(w http.ResponseWriter, r *http.Request) {
 		Title: r.PostFormValue("title"),
 		Body:  r.PostFormValue("body"),
 		UserID: currentUser.ID,
+		CategoryID: cast.ToUint64(r.PostFormValue("category_id")),
 	}
 
 	errors := requests.ValidateArticleForm(_article)
@@ -123,11 +125,10 @@ func (c *ArticlesController) Update(w http.ResponseWriter, r *http.Request) {
 
 			_article.Title = r.PostFormValue("title")
 			_article.Body = r.PostFormValue("body")
-
+			_article.CategoryID = cast.ToUint64(r.PostFormValue("category_id"))
+			_article.Category.ID = cast.ToUint64(r.PostFormValue("category_id"))
 			errors := requests.ValidateArticleForm(_article)
 
-			fmt.Println("=======Article update ERRORS=======")
-			fmt.Println(errors)
 			if len(errors) == 0 {
 				rowsAffected, err := _article.Update()
 

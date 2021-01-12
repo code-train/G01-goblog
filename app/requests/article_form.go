@@ -9,6 +9,7 @@ func ValidateArticleForm(data article.Article) map[string][]string {
 	rules := govalidator.MapData{
 		"title": []string{"required", "min:3", "max:40"},
 		"body":	[]string{"required", "min:10"},
+		"categoryID":[]string{"required"},
 	}
 
 
@@ -21,6 +22,9 @@ func ValidateArticleForm(data article.Article) map[string][]string {
 		"body": []string{
 			"required:文章内容为必填项",
 			"min_cn:长度需大于 10",
+		},
+		"categoryID": []string{
+			"required:请选择分类",
 		},
 	}
 
