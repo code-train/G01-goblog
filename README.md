@@ -8,8 +8,8 @@ goblog练习项目
 * 基础的 session 以及 cookie 使用
 * 基础的 GORM 使用
 * 基础的 模板 使用
-* 基础的 Viper 以及环境变量使用
-* 基础的 govalidator 表单验证使用
+* 基础的 Viper 以及 环境变量 使用
+* 基础的 govalidator 表单验证 使用
 
 
 TODO LIST
